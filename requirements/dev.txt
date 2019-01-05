@@ -1,0 +1,5 @@
+# requirements for develop
+-r prod.txt
+pytest
+pytest-cov
+coveralls
