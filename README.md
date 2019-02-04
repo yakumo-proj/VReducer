@@ -10,9 +10,7 @@
 * python 2.7.x
 
 ## 対応VRoidStudoバージョン
-* 0.3.0
-* 0.4.0-p1
-* 0.5.1-p1
+* 0.5.3
 
 ## 注意点
 * 髪の毛メッシュを結合してエクスポートしたモデルを使用してください。
@@ -39,6 +37,9 @@ VRM_FILE_PATH: VRMファイルパス
 
 -s, --replace-shade-color: 陰を消す(陰の色をライトが当たる部分の色と同色にする)
 
+-e, --emissive-color: 光源を無視する([Clusterの一部会場でモデルが暗くなる問題](https://clusterhelp.zendesk.com/hc/ja/articles/360021584012-cluster-v1-6-14-2019-1-8-)への対策)。
+このオプションを指定すると髪のハイライトが消えます。
+
 -t, --texture-size TEXTURE_SIZE: テクスチャサイズを制限する(このサイズ以下に制限される)。TEXTURE_SIZEは幅,高さで指定(例：-t 512,512)。デフォルト2048x2048
 
 -h, --help: ヘルプ表示
@@ -48,6 +49,12 @@ VRM_FILE_PATH: VRMファイルパス
 変換後のファイルは以下のフォルダ以下に出力されます。
 ```
 result
+```
+
+###推奨コマンド
+2018/02/06時点で[Clusterの一部会場でモデルが暗くなる問題](https://clusterhelp.zendesk.com/hc/ja/articles/360021584012-cluster-v1-6-14-2019-1-8-)が出ているため、```-e```オプション付けることを推奨します。
+```bash
+$ python vreducer.py VRoid.vrm -e
 ```
 
 ### 実行例
