@@ -1,4 +1,8 @@
 # VReducer
+[![MIT](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/kanno2inf/VReducer/blob/master/LICENSE)
+![CircleCI](https://circleci.com/gh/kanno2inf/VReducer/tree/master.svg?style=shield&circle-token=7fdbd9bb86e45fc5715e148199427b7db095e955)
+![Coverage Status](https://coveralls.io/repos/github/kanno2inf/VReducer/badge.svg?branch=master)
+
 [VRoidStudio](https://vroid.pixiv.net/)でエクスポートされたモデルを[Cluster](https://cluster.mu/)アバター用に軽量化する非公式スクリプトです。
 
 
