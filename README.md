@@ -18,6 +18,10 @@
 * ノーマルマップ、スフィアマップは削除されます。
 * マテリアル結合により基本色、影色が他のマテリアルに結合されるため、一部マテリアルの色が変わる可能性があります。
 
+## ダウンロード
+* 安定版 : [Releaseページ](https://github.com/kanno2inf/VReducer/releases)からダウンロード
+
+* 開発最新版 : [こちら](https://github.com/kanno2inf/VReducer/archive/master.zip) からダウンロード
 
 ## 準備
 テクスチャ結合で[Pillow(PIL)](https://github.com/python-pillow/Pillow)ライブラリを使用しているため、以下のコマンドでPillowをインストールしてください。
