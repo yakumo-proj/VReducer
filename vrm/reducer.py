@@ -219,6 +219,35 @@ def shrink_materials(gltf):
     return gltf
 
 
+def emissive_mtoon_material(material):
+    """
+    EmissiveTextureで表示するように変更
+    :param material: VRMマテリアル
+    """
+    # GI Intensity -> 0
+    material['floatProperties']['_IndirectLightIntensity'] = 0
+    # Emissive Color -> Color
+    vec_props = material['vectorProperties']
+    vec_props['_EmissionColor'] = vec_props['_Color']
+    # Color -> (0,0,0,1), Shade Color -> (0,0,0,1)
+    vec_props['_Color'] = vec_props['_ShadeColor'] = [0, 0, 0, 1]
+    # Emissive Texture -> MainTexture
+    material['textureProperties']['_EmissionMap'] = material['textureProperties']['_MainTex']
+
+
+def emissive_mtoon_materials(gltf):
+    """
+    Clusterの一部会場でMToonモデルが黒くなる問題への対策
+    https://clusterhelp.zendesk.com/hc/ja/articles/360021584012-cluster-v1-6-14-2019-1-8-
+    :param gltf: glTFオブジェクト
+    :return:
+    """
+    gltf = deepcopy(gltf)
+    for material in gltf['extensions']['VRM']['materialProperties']:
+        emissive_mtoon_material(material)
+    return gltf
+
+
 def sorted_primitives(primitives, material_name_order):
     """
     指定したマテリアル順にプリミティブをソートする
@@ -542,12 +571,13 @@ def find_eye_extra_name(gltf):
     return find(contain_extra_eye, material_names)
 
 
-def reduce_vroid(gltf, replace_shade_color, texture_size):
+def reduce_vroid(gltf, replace_shade_color, texture_size, emissive):
     """
     VRoidモデルを軽量化する
     :param gltf: glTFオブジェクト(VRM拡張を含む)
     :param replace_shade_color: Trueで陰色を消す
     :param texture_size: テクスチャサイズの上限値
+    :param emissive: TrueでEmissiveテクスチャで表示(光源の影響を無視する)
     :return: 軽量化したglTFオブジェクト
     """
     # マテリアルの重複排除
@@ -634,6 +664,10 @@ def reduce_vroid(gltf, replace_shade_color, texture_size):
     if replace_shade_color:
         # 陰色を消す
         gltf = replace_shade(gltf)
+
+    if emissive:
+        # Emissiveテクスチャで表示、光源を無視する
+        gltf = emissive_mtoon_materials(gltf)
 
     # 不要要素削除
     gltf = clean(gltf)
