@@ -51,7 +51,7 @@ VRM_FILE_PATH: VRMファイルパス
 result
 ```
 
-###推奨コマンド
+### 推奨コマンド
 2018/02/06時点で[Clusterの一部会場でモデルが暗くなる問題](https://clusterhelp.zendesk.com/hc/ja/articles/360021584012-cluster-v1-6-14-2019-1-8-)が出ているため、```-e```オプション付けることを推奨します。
 ```bash
 $ python vreducer.py VRoid.vrm -e
