@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
+from math import sqrt
 
 
 def unique(seq):
@@ -36,3 +37,15 @@ def exists(func, seq):
         if func(x):
             return True
     return None
+
+
+def distance(vec1, vec2):
+    """
+    2つのベクトルの距離を計算する
+    :param vec1: ベクトル1
+    :param vec2: ベクトル2
+    :return: ユークリッド距離を返す
+    """
+    diff_seq = [s1 - s2 for s1, s2 in zip(vec1, vec2)]
+    sq_ds = sum([ds * ds for ds in diff_seq])
+    return sqrt(sq_ds)
