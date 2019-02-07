@@ -8,7 +8,7 @@ from itertools import groupby
 from PIL import Image
 
 from cleaner import clean
-from util import find, exists, unique
+from util import find, exists, unique, distance
 
 """
 VRoidモデルの削減処理
@@ -284,7 +284,7 @@ def sorted_mesh_primitives(gltf, mesh_name, material_name_order):
 
 def find_material_from_name(materials, name):
     """
-    :param gltf: glTFオブジェクト
+    :param materials: マテリアルリスト
     :param name: 検索マテリアル名
     :return: マテリアル名に部分一致するマテリアルを返す。見つからなければNone
     """
@@ -298,6 +298,27 @@ def find_material(gltf, name):
     :return: マテリアル名に部分一致するglTFマテリアルを返す。見つからなければNone
     """
     return find_material_from_name(gltf['materials'], name)
+
+
+def find_near_vrm_material(gltf, name, material):
+    """
+    :param gltf: glTFオブジェクト
+    :param name: 検索マテリアル名
+    :param material: 比較対象のVRMマテリアル
+    :return: 色の近いマテリアル名に部分一致するglTFマテリアルを返す。見つからなければNone
+    """
+    # 比較対象のマテリアルを除く
+    vrm_materials = gltf['extensions']['VRM']['materialProperties']
+    materials = [m for m in vrm_materials if name and name in m['name'] and m != material]
+    if not materials:
+        return None
+
+    def color_distance(m1, m2):
+        v1, v2 = m1['vectorProperties'], m2['vectorProperties']
+        return distance(v1['_Color'], v2['_Color'])
+
+    # 最も色の近いマテリアルを返す
+    return min(materials, key=lambda m: color_distance(m, material))
 
 
 def find_vrm_material(gltf, name):
@@ -652,14 +673,15 @@ def reduce_vroid(gltf, replace_shade_color, texture_size, emissive):
         '_EyeHighlight_': {'pos': (0, 512), 'size': (1024, 512)},
         '_EyeWhite_': {'pos': (0, 1024), 'size': (1024, 512)}
     }, '_EyeHighlight_', texture_size)
+
     # 髪の毛、頭の下毛
-    hair_resize = {}
-    hair_material = find_material(gltf, '_Hair_')
-    if hair_material:
-        hair_resize[hair_material['name']] = {'pos': (0, 0), 'size': (512, 1024)}
-        if find_material(gltf, '_HairBack_'):
-            hair_resize['_HairBack_'] = {'pos': (512, 0), 'size': (1024, 1024)}
-        gltf = combine_material(gltf, hair_resize, '_Hair_', texture_size)
+    hair_back_material = find_vrm_material(gltf, '_HairBack_')
+    if hair_back_material:
+        hair_resize = {'_HairBack_': {'pos': (512, 0), 'size': (1024, 1024)}}
+        hair_material = find_near_vrm_material(gltf, '_Hair_', hair_back_material)
+        if hair_material:
+            hair_resize[hair_material['name']] = {'pos': (0, 0), 'size': (512, 1024)}
+            gltf = combine_material(gltf, hair_resize, hair_material['name'], texture_size)
 
     if replace_shade_color:
         # 陰色を消す
