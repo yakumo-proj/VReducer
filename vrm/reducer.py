@@ -178,7 +178,7 @@ def remove_primitives(gltf, material_names):
 
     # プリミティブ削除
     for mesh in gltf['meshes']:
-        mesh['primitives'] = filter(lambda p: contain_name(p['material']['name']), mesh['primitives'])
+        mesh['primitives'] = filter(lambda p: not contain_name(p['material']['name']), mesh['primitives'])
     return gltf
 
 
