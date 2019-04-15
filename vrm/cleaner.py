@@ -54,7 +54,9 @@ def list_textures(gltf):
     for material in vrm['materialProperties']:
         for texture in material['textureProperties'].values():
             yield texture
-    yield vrm['meta']['texture']
+
+    if 'texture' in vrm['meta']:
+        yield vrm['meta']['texture']
 
 
 def clean_textures(gltf):

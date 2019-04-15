@@ -87,7 +87,8 @@ def instancing(gltf, chunks=None):
 
     # VRMテクスチャ変換
     vrm = gltf['extensions']['VRM']
-    vrm['meta']['texture'] = textures[vrm['meta']['texture']]
+    if 'texture' in vrm['meta']:
+        vrm['meta']['texture'] = textures[vrm['meta']['texture']]
     vrm_materials = vrm['materialProperties']
     for material in vrm_materials:
         material['name'] = normalize_material_name(material['name'])  # マテリアル名を正規化
@@ -189,7 +190,8 @@ def indexing(gltf):
 
     # VRMシェーダーテクスチャ変換
     vrm = gltf['extensions']['VRM']
-    vrm['meta']['texture'] = textures.index(vrm['meta']['texture'])
+    if 'texture' in vrm['meta']:
+        vrm['meta']['texture'] = textures.index(vrm['meta']['texture'])
 
     vrm_materials = vrm['materialProperties']
     for material in vrm_materials:
