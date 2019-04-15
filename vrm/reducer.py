@@ -642,12 +642,13 @@ def reduce_vroid(gltf, replace_shade_color, texture_size, emissive):
 
     elif cloth_type == CLOTH_ONE_PIECE:
         # ワンピース、靴
-        # 0.3.0: Onepiece
-        # 0.4.0-p1: Onepice
+        # 0.3.0: F00_002_Onepiece
+        # 0.4.0-p1: F00_002_Onepice
+        # 0.6.3: F00_002_01_Onepice
         gltf = combine_material(gltf, {
-            'F00_002_Onepi': {'pos': (0, 0), 'size': (2048, 1536)},
+            '_Onepi': {'pos': (0, 0), 'size': (2048, 1536)},
             '_Shoes_': {'pos': (0, 1536), 'size': (512, 512)}
-        }, 'F00_002_Onepi', texture_size)
+        }, '_Onepi', texture_size)
 
     # 体、顔、口
     gltf = combine_material(gltf, {
