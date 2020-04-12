@@ -20,13 +20,13 @@ def parse_texture_size(texture_size_option):
 def main(argv):
     from vrm.version import app_name
     parser = ArgumentParser()
-    parser.add_argument('path', help=u'VRM file exported by VRoid Studio.')
-    parser.add_argument('-s', '--replace-shade-color', action='store_true', help=u'Replace shade color to main color.')
+    parser.add_argument('path', help='VRM file exported by VRoid Studio.')
+    parser.add_argument('-s', '--replace-shade-color', action='store_true', help='Replace shade color to main color.')
     parser.add_argument('-e', '--emissive-color', action='store_true',
-                        help=u'Set main texture as emissive texture and ignore light color.')
+                        help='Set main texture as emissive texture and ignore light color.')
     parser.add_argument('-t', '--texture-size', default='2048,2048',
-                        help=u'Change texture size less equal than this size. (-t 512,512)')
-    parser.add_argument('-f', '--force', action='store_true', help=u'Overwrite file if already exists same file.')
+                        help='Change texture size less equal than this size. (-t 512,512)')
+    parser.add_argument('-f', '--force', action='store_true', help='Overwrite file if already exists same file.')
     parser.add_argument('-V', '--version', action='version', version=app_name())
     opt = parser.parse_args(argv)
 
