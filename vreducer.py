@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+
 import sys
 from argparse import ArgumentParser
 from os import mkdir
@@ -60,8 +60,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    if sys.version[0] == '2':
-        reload(sys)
-        sys.setdefaultencoding(sys.getfilesystemencoding())
-
     main(sys.argv[1:])

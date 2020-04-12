@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding:utf-8 -*-
+
 import pytest
 
 from vrm.reducer import shrink_gltf_materials, shrink_vrm_materials, shrink_materials
