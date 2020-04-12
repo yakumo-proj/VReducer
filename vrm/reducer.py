@@ -91,7 +91,7 @@ def combine_primitives(primitives):
     primitive_indices = [primitive['indices'] for primitive in primitives]
 
     # プリミティブのbufferView列挙
-    buffer_views = map(lambda indices: indices['bufferView'], primitive_indices)
+    buffer_views = list(map(lambda indices: indices['bufferView'], primitive_indices))
     head_view = buffer_views[0]
     # 統合したbufferViewを作成
     buf = head_view['buffer']
@@ -178,7 +178,7 @@ def remove_primitives(gltf, material_names):
 
     # プリミティブ削除
     for mesh in gltf['meshes']:
-        mesh['primitives'] = filter(lambda p: not contain_name(p['material']['name']), mesh['primitives'])
+        mesh['primitives'] = list(filter(lambda p: not contain_name(p['material']['name']), mesh['primitives']))
     return gltf
 
 
@@ -256,7 +256,7 @@ def sorted_primitives(primitives, material_name_order):
     :return: ソートしたプリミティブリスト
     """
     max_weight = len(material_name_order) + 1
-    material_name_order = filter(None, material_name_order)
+    material_name_order = list(filter(None, material_name_order))
 
     def weight(name):
         # マテリアル名の重みを返す
@@ -481,9 +481,8 @@ def combine_material(gltf, resize_info, base_material_name, texture_size=(2048, 
         accessor = primitive['indices']
         indices_buffer = accessor['bufferView']['data']
         indices_offset = accessor['byteOffset']
-        indices = map(lambda i: struct.unpack_from('I', indices_buffer, indices_offset + i * 4)[0],
-                      xrange(accessor['count']))
-
+        indices = list(map(lambda i: struct.unpack_from('I', indices_buffer, indices_offset + i * 4)[0],
+                      range(accessor['count'])))
         # uvバッファ
         original_data = original_view_datas[view_index]
         uv_accessor = primitive['attributes']['TEXCOORD_0']
