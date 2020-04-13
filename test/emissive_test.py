@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding:utf-8 -*-
+
 import pytest
 
 from vrm.reducer import emissive_mtoon_material, emissive_mtoon_materials
