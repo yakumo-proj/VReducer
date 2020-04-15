@@ -392,6 +392,20 @@ def list_primitives(gltf, names):
             view_index = gltf['bufferViews'].index(primitive['attributes']['TEXCOORD_0']['bufferView'])
             yield (name, primitive, view_index)
 
+def merge_dict_recursive(source, destination):
+    """
+    destination の dict へ source の dict を再帰的に統合する
+    :param source: 結合する他方の dict
+    :param destination: 結合を受ける dict
+    # :return: 結合結果の dict
+    """
+    for key, value in source.items():
+        if isinstance(value, dict):
+            node = destination.setdefault(key,{})
+            merge_dict_recursive(value, node)
+        else:
+            destination[key] = value
+    # return destination
 
 def combine_material(gltf, resize_info, base_material_name, texture_size=(2048, 2048)):
     """
@@ -591,13 +605,14 @@ def find_eye_extra_name(gltf):
     return find(contain_extra_eye, material_names)
 
 
-def reduce_vroid(gltf, replace_shade_color, texture_size, emissive):
+def reduce_vroid(gltf, replace_shade_color, texture_size, emissive, material_conf = None):
     """
     VRoidモデルを軽量化する
     :param gltf: glTFオブジェクト(VRM拡張を含む)
     :param replace_shade_color: Trueで陰色を消す
     :param texture_size: テクスチャサイズの上限値
     :param emissive: TrueでEmissiveテクスチャで表示(光源の影響を無視する)
+    :param material_conf: ユーザー定義のマテリアル設定(Noneの場合は内蔵定義に基づいて動作)
     :return: 軽量化したglTFオブジェクト
     """
     # マテリアルの重複排除
@@ -620,68 +635,95 @@ def reduce_vroid(gltf, replace_shade_color, texture_size, emissive):
     # マテリアルを結合
     print('combine materials...')
 
-    cloth_type = get_cloth_type(gltf)
+    if material_conf:
+        if (resize_info_list := material_conf.get('resize_info')):
+            for base_material_name, resize_info in resize_info_list.items():
+                gltf = combine_material(gltf, resize_info, base_material_name, texture_size)
 
-    if cloth_type == CLOTH_STUDENT:
-        # 制服上下、リボン、靴
+        if (resize_info_near_list := material_conf.get('resize_info_near')):
+            for base_material_name, resize_info_near in resize_info_near_list.items():
+                base_material = find_vrm_material(gltf, base_material_name)
+                if base_material \
+                and (near_key:=resize_info_near.get('near_key')) \
+                and (near_pos:=resize_info_near.get('near_pos')) \
+                and (near_size:=resize_info_near.get('near_size')) \
+                and (pos:=resize_info_near.get('pos')) \
+                and (size:=resize_info_near.get('size')):
+                    near_resize = {base_material_name: {'pos': pos, 'size': size}}
+                    near_material = find_near_vrm_material(gltf, near_key, base_material)
+                    if near_material:
+                        near_resize[near_material['name']] = {'pos': near_pos, 'size': near_size}
+                        gltf = combine_material(gltf, near_resize, near_material['name'], texture_size)
+
+        if (modify_list := material_conf.get('modify')):
+            for material_name, modifiers in modify_list.items():
+                material = find_vrm_material(gltf, material_name)
+                merge_dict_recursive(modifiers, material)
+
+    else:
+
+        cloth_type = get_cloth_type(gltf)
+
+        if cloth_type == CLOTH_STUDENT:
+            # 制服上下、リボン、靴
+            gltf = combine_material(gltf, {
+                '_Tops_': {'pos': (0, 0), 'size': (2048, 1536)},
+                '_Bottoms_': {'pos': (0, 1536), 'size': (512, 512)},
+                '_Accessory_': {'pos': (512, 1536), 'size': (512, 512)},
+                '_Shoes_': {'pos': (1024, 1536), 'size': (512, 512)}
+            }, '_Tops_', texture_size)
+
+        elif cloth_type == CLOTH_MALE_STUDENT:
+            gltf = combine_material(gltf, {
+                '_Tops_': {'pos': (0, 0), 'size': (2048, 1024)},
+                '_Bottoms_': {'pos': (0, 1024), 'size': (1024, 1024)},
+                '_Accessory_': {'pos': (1024, 1024), 'size': (512, 512)},
+                '_Shoes_': {'pos': (1024, 1536), 'size': (512, 512)}
+            }, '_Tops_', texture_size)
+
+        elif cloth_type == CLOTH_ONE_PIECE:
+            # ワンピース、靴
+            # 0.3.0: F00_002_Onepiece
+            # 0.4.0-p1: F00_002_Onepice
+            # 0.6.3: F00_002_01_Onepice
+            gltf = combine_material(gltf, {
+                '_Onepi': {'pos': (0, 0), 'size': (2048, 1536)},
+                '_Shoes_': {'pos': (0, 1536), 'size': (512, 512)}
+            }, '_Onepi', texture_size)
+
+        # 体、顔、口
         gltf = combine_material(gltf, {
-            '_Tops_': {'pos': (0, 0), 'size': (2048, 1536)},
-            '_Bottoms_': {'pos': (0, 1536), 'size': (512, 512)},
-            '_Accessory_': {'pos': (512, 1536), 'size': (512, 512)},
-            '_Shoes_': {'pos': (1024, 1536), 'size': (512, 512)}
-        }, '_Tops_', texture_size)
+            '_Face_': {'pos': (0, 0), 'size': (512, 512)},
+            '_FaceMouth_': {'pos': (512, 0), 'size': (512, 512)},
+            '_Body_': {'pos': (0, 512), 'size': (2048, 1536)}
+        }, '_Face_', texture_size)
+        # レンダータイプを変更
+        face_mat = find_vrm_material(gltf, '_Face_')
+        face_mat['keywordMap']['_ALPHATEST_ON'] = True
+        face_mat['tagMap']["RenderType"] = 'TransparentCutout'
 
-    elif cloth_type == CLOTH_MALE_STUDENT:
+        # アイライン、まつ毛
         gltf = combine_material(gltf, {
-            '_Tops_': {'pos': (0, 0), 'size': (2048, 1024)},
-            '_Bottoms_': {'pos': (0, 1024), 'size': (1024, 1024)},
-            '_Accessory_': {'pos': (1024, 1024), 'size': (512, 512)},
-            '_Shoes_': {'pos': (1024, 1536), 'size': (512, 512)}
-        }, '_Tops_', texture_size)
+            find_eye_extra_name(gltf): {'pos': (0, 0), 'size': (1024, 512)},
+            '_FaceEyeline_': {'pos': (0, 512), 'size': (1024, 512)},
+            '_FaceEyelash_': {'pos': (0, 1024), 'size': (1024, 512)}
+        }, '_FaceEyeline_', texture_size)
 
-    elif cloth_type == CLOTH_ONE_PIECE:
-        # ワンピース、靴
-        # 0.3.0: F00_002_Onepiece
-        # 0.4.0-p1: F00_002_Onepice
-        # 0.6.3: F00_002_01_Onepice
+        # 瞳孔、ハイライト、白目
         gltf = combine_material(gltf, {
-            '_Onepi': {'pos': (0, 0), 'size': (2048, 1536)},
-            '_Shoes_': {'pos': (0, 1536), 'size': (512, 512)}
-        }, '_Onepi', texture_size)
+            '_EyeIris_': {'pos': (0, 0), 'size': (1024, 512)},
+            '_EyeHighlight_': {'pos': (0, 512), 'size': (1024, 512)},
+            '_EyeWhite_': {'pos': (0, 1024), 'size': (1024, 512)}
+        }, '_EyeHighlight_', texture_size)
 
-    # 体、顔、口
-    gltf = combine_material(gltf, {
-        '_Face_': {'pos': (0, 0), 'size': (512, 512)},
-        '_FaceMouth_': {'pos': (512, 0), 'size': (512, 512)},
-        '_Body_': {'pos': (0, 512), 'size': (2048, 1536)}
-    }, '_Face_', texture_size)
-    # レンダータイプを変更
-    face_mat = find_vrm_material(gltf, '_Face_')
-    face_mat['keywordMap']['_ALPHATEST_ON'] = True
-    face_mat['tagMap']["RenderType"] = 'TransparentCutout'
-
-    # アイライン、まつ毛
-    gltf = combine_material(gltf, {
-        find_eye_extra_name(gltf): {'pos': (0, 0), 'size': (1024, 512)},
-        '_FaceEyeline_': {'pos': (0, 512), 'size': (1024, 512)},
-        '_FaceEyelash_': {'pos': (0, 1024), 'size': (1024, 512)}
-    }, '_FaceEyeline_', texture_size)
-
-    # 瞳孔、ハイライト、白目
-    gltf = combine_material(gltf, {
-        '_EyeIris_': {'pos': (0, 0), 'size': (1024, 512)},
-        '_EyeHighlight_': {'pos': (0, 512), 'size': (1024, 512)},
-        '_EyeWhite_': {'pos': (0, 1024), 'size': (1024, 512)}
-    }, '_EyeHighlight_', texture_size)
-
-    # 髪の毛、頭の下毛
-    hair_back_material = find_vrm_material(gltf, '_HairBack_')
-    if hair_back_material:
-        hair_resize = {'_HairBack_': {'pos': (512, 0), 'size': (1024, 1024)}}
-        hair_material = find_near_vrm_material(gltf, '_Hair_', hair_back_material)
-        if hair_material:
-            hair_resize[hair_material['name']] = {'pos': (0, 0), 'size': (512, 1024)}
-            gltf = combine_material(gltf, hair_resize, hair_material['name'], texture_size)
+        # 髪の毛、頭の下毛
+        hair_back_material = find_vrm_material(gltf, '_HairBack_')
+        if hair_back_material:
+            hair_resize = {'_HairBack_': {'pos': (512, 0), 'size': (1024, 1024)}}
+            hair_material = find_near_vrm_material(gltf, '_Hair_', hair_back_material)
+            if hair_material:
+                hair_resize[hair_material['name']] = {'pos': (0, 0), 'size': (512, 1024)}
+                gltf = combine_material(gltf, hair_resize, hair_material['name'], texture_size)
 
     if replace_shade_color:
         # 陰色を消す
