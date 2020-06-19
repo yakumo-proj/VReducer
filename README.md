@@ -25,9 +25,9 @@
 * 開発最新版 : [こちら](https://github.com/kanno2inf/VReducer/archive/master.zip) からダウンロード
 
 ## 準備
-テクスチャ結合で[Pillow(PIL)](https://github.com/python-pillow/Pillow)ライブラリを使用しているため、以下のコマンドでPillowをインストールしてください。
+テクスチャ結合で[Pillow(PIL)](https://github.com/python-pillow/Pillow) とtomlライブラリを使用しているため、以下のコマンドで必要なモジュールをインストールしてください。
 ```
-$ pip install Pillow
+$ pip install -r requirements/prod.txt
 ```
 
 ## 使い方
