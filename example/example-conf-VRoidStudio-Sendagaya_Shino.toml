@@ -1,0 +1,79 @@
+# このファイルは --conf で使用できる設定ファイルの例です。
+# VRoid Studio 0.8.3 時点でデフォルトで使用可能な Sendagaya Shino の最適化設定例です。
+
+# --conf 機能は独自のテクスチャー、素体、服などを使用した VRM に対して使用したい場合や、
+# VRoid Studio の 更新があり VReducer の内蔵定義が追いついていない場合に便利かもしれません。
+
+# なお、 TOML 形式定義データの構造をツリー構造で見たり、JSONやYAMLと比較してみたい場合は
+# https://toolkit.site/format.html
+# を使うと幸せになれるかもしれません。
+
+# 制服上下、リボン、靴
+[material.resize_info._Tops_._Tops_]
+pos  = [    0,    0 ]
+size = [ 2048, 2536 ]
+[material.resize_info._Tops_._Bottoms_]
+pos  = [    0, 1536 ]
+size = [  512,  512 ]
+[material.resize_info._Tops_._Accessory_]
+pos  = [  512, 1536 ]
+size = [  512,  512 ]
+[material.resize_info._Tops_._Shoes_]
+pos  = [ 1024, 1536 ]
+size = [  512,  512 ]
+
+# 体、顔、口
+[material.resize_info._Face_._Face_]
+pos  = [    0,    0 ]
+size = [  512,  512 ]
+[material.resize_info._Face_._FaceMouth_]
+pos  = [  512,    0 ]
+size = [  512,  512 ]
+[material.resize_info._Face_._Body_]
+pos  = [    0,  512 ]
+size = [ 2048, 1536 ]
+
+# アイライン、まつ毛
+# Note: VRoid Studio の他のデータでは _EyeExtra_ 相当の
+# マテリアルが _FaceEyeSP に入っている場合もあるようです。
+[material.resize_info._FaceEyeline_._EyeExtra_]
+pos  = [    0,  512 ]
+size = [ 1024,  512 ]
+[material.resize_info._FaceEyeline_._FaceEyeline_]
+pos  = [    0,  512 ]
+size = [ 1024,  512 ]
+[material.resize_info._FaceEyeline_._FaceEyelash_]
+pos  = [    0, 1024 ]
+size = [ 1024,  512 ]
+
+# 瞳孔、ハイライト、白目
+[material.resize_info._EyeHighlight_._EyeIris_]
+pos  = [    0,    0 ]
+size = [ 1024,  512 ]
+[material.resize_info._EyeHighlight_._EyeHighlight_]
+pos  = [    0,  512 ]
+size = [ 1024,  512 ]
+[material.resize_info._EyeHighlight_._EyeWhite_]
+pos  = [    0, 1024 ]
+size = [ 1024,  512 ]
+
+# ↓のように resize_info_near をテーブルを使うと、
+# 1. _HairBack_ (=TOMLのテーブル名)に "部分一致" するマテリアル(*1)を探し、
+# 2. (*1)_と色の近い _Hair_ (=near_key)に "部分一致" するマテリアル(*2)を探し、
+# 3. (*1) を pos, size 、(*2) を near_pos, near_size で_(*2) へ統合
+# します。
+
+# 髪の毛、頭の下毛
+[material.resize_info_near._HairBack_]
+pos  = [  512,    0 ]
+size = [ 1024, 1024 ]
+near_key = "_Hair_"
+near_pos  = [    0,    0 ]
+near_size = [  512, 1024 ]
+
+# material.modify を定義すると特定のマテリアルのパラメーターを変更できます
+# ↓は本体内蔵機能でも対応しているレンダータイプの変更を行う場合の例です
+[material.modify._Face_.keywordMap]
+_ALPHATEST_ON = true
+[material.modify._Face_.tagMap]
+RenderType = "TransparentCutout"

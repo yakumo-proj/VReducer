@@ -28,7 +28,12 @@ def main(argv):
                         help='Change texture size less equal than this size. (-t 512,512)')
     parser.add_argument('-f', '--force', action='store_true', help='Overwrite file if already exists same file.')
     parser.add_argument('-V', '--version', action='version', version=app_name())
+    parser.add_argument('-c', '--conf', help='Set a configuration file path.')
     opt = parser.parse_args(argv)
+
+    if opt.conf:
+        import toml
+        opt.conf = toml.load(open(opt.conf))
 
     path = opt.path
     print(path)
@@ -39,7 +44,7 @@ def main(argv):
     print_stat(vrm.gltf)
 
     print('-' * 30)
-    vrm.gltf = reduce_vroid(vrm.gltf, opt.replace_shade_color, parse_texture_size(opt.texture_size), opt.emissive_color)
+    vrm.gltf = reduce_vroid(vrm.gltf, opt.replace_shade_color, parse_texture_size(opt.texture_size), opt.emissive_color, m if opt.conf and (m:=opt.conf.get('material')) else None )
 
     print('-' * 30)
     print_stat(vrm.gltf)
