@@ -44,7 +44,8 @@ def main(argv):
     print_stat(vrm.gltf)
 
     print('-' * 30)
-    vrm.gltf = reduce_vroid(vrm.gltf, opt.replace_shade_color, parse_texture_size(opt.texture_size), opt.emissive_color, m if opt.conf and (m:=opt.conf.get('material')) else None )
+    vrm.gltf = reduce_vroid(vrm.gltf, opt.replace_shade_color, parse_texture_size(opt.texture_size), opt.emissive_color,
+                            m if opt.conf and (m := opt.conf.get('material')) else None)
 
     print('-' * 30)
     print_stat(vrm.gltf)

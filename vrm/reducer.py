@@ -390,7 +390,8 @@ def list_primitives(gltf, names):
     for name in names:
         for primitive in primitives_has_material(gltf, name):
             view_index = gltf['bufferViews'].index(primitive['attributes']['TEXCOORD_0']['bufferView'])
-            yield (name, primitive, view_index)
+            yield name, primitive, view_index
+
 
 def merge_dict_recursive(source, destination):
     """
@@ -401,11 +402,12 @@ def merge_dict_recursive(source, destination):
     """
     for key, value in source.items():
         if isinstance(value, dict):
-            node = destination.setdefault(key,{})
+            node = destination.setdefault(key, {})
             merge_dict_recursive(value, node)
         else:
             destination[key] = value
     # return destination
+
 
 def combine_material(gltf, resize_info, base_material_name, texture_size=(2048, 2048)):
     """
@@ -438,11 +440,11 @@ def combine_material(gltf, resize_info, base_material_name, texture_size=(2048, 
 
     def scaled():
         # スケールを適用したリサイズ情報を返す
-        for name, info in resize_info.items():
-            x, y = info['pos']
-            pos = (int(x * scale_w), int(y * scale_h))
-            w, h = info['size']
-            size = (int(w * scale_w), int(h * scale_h))
+        for name, info_ in resize_info.items():
+            px, py = info_['pos']
+            pos = (int(px * scale_w), int(py * scale_h))
+            iw, ih = info_['size']
+            size = (int(iw * scale_w), int(ih * scale_h))
             yield name, {'pos': pos, 'size': size}
 
     scaled_info = dict(scaled())
@@ -496,7 +498,7 @@ def combine_material(gltf, resize_info, base_material_name, texture_size=(2048, 
         indices_buffer = accessor['bufferView']['data']
         indices_offset = accessor['byteOffset']
         indices = list(map(lambda i: struct.unpack_from('I', indices_buffer, indices_offset + i * 4)[0],
-                      range(accessor['count'])))
+                           range(accessor['count'])))
         # uvバッファ
         original_data = original_view_datas[view_index]
         uv_accessor = primitive['attributes']['TEXCOORD_0']
@@ -605,7 +607,7 @@ def find_eye_extra_name(gltf):
     return find(contain_extra_eye, material_names)
 
 
-def reduce_vroid(gltf, replace_shade_color, texture_size, emissive, material_conf = None):
+def reduce_vroid(gltf, replace_shade_color, texture_size, emissive, material_conf=None):
     """
     VRoidモデルを軽量化する
     :param gltf: glTFオブジェクト(VRM拡張を含む)
@@ -636,26 +638,26 @@ def reduce_vroid(gltf, replace_shade_color, texture_size, emissive, material_con
     print('combine materials...')
 
     if material_conf:
-        if (resize_info_list := material_conf.get('resize_info')):
+        if resize_info_list := material_conf.get('resize_info'):
             for base_material_name, resize_info in resize_info_list.items():
                 gltf = combine_material(gltf, resize_info, base_material_name, texture_size)
 
-        if (resize_info_near_list := material_conf.get('resize_info_near')):
+        if resize_info_near_list := material_conf.get('resize_info_near'):
             for base_material_name, resize_info_near in resize_info_near_list.items():
                 base_material = find_vrm_material(gltf, base_material_name)
                 if base_material \
-                and (near_key:=resize_info_near.get('near_key')) \
-                and (near_pos:=resize_info_near.get('near_pos')) \
-                and (near_size:=resize_info_near.get('near_size')) \
-                and (pos:=resize_info_near.get('pos')) \
-                and (size:=resize_info_near.get('size')):
+                        and (near_key := resize_info_near.get('near_key')) \
+                        and (near_pos := resize_info_near.get('near_pos')) \
+                        and (near_size := resize_info_near.get('near_size')) \
+                        and (pos := resize_info_near.get('pos')) \
+                        and (size := resize_info_near.get('size')):
                     near_resize = {base_material_name: {'pos': pos, 'size': size}}
                     near_material = find_near_vrm_material(gltf, near_key, base_material)
                     if near_material:
                         near_resize[near_material['name']] = {'pos': near_pos, 'size': near_size}
                         gltf = combine_material(gltf, near_resize, near_material['name'], texture_size)
 
-        if (modify_list := material_conf.get('modify')):
+        if modify_list := material_conf.get('modify'):
             for material_name, modifiers in modify_list.items():
                 material = find_vrm_material(gltf, material_name)
                 merge_dict_recursive(modifiers, material)

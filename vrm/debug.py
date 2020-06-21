@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 
-
 def print_stat(gltf):
     """
     モデル情報表示
