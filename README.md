@@ -7,7 +7,7 @@
 
 
 ## 動作環境
-* python 3..x
+* python 3.8.x
 
 ## 対応VRoidStudoバージョン
 * 0.5.3
