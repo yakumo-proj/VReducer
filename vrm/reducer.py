@@ -8,6 +8,7 @@ from itertools import groupby
 from PIL import Image
 
 from .cleaner import clean
+from .placer import get_cloth_place
 from .util import find, exists, unique, distance
 
 """
@@ -569,27 +570,6 @@ def replace_shade(gltf):
 """
 VRoidモデルの服装識別子
 """
-CLOTH_NAKED = 'BIG_BOSS'
-CLOTH_STUDENT = 'STUDENT'
-CLOTH_ONE_PIECE = 'ONE_PIECE'
-CLOTH_MALE_STUDENT = 'MALE_STUDENT'
-
-
-def get_cloth_type(gltf):
-    """
-    マテリアル情報から服装を判定する
-    :param gltf: glTFオブジェクト
-    :return: 服装識別子
-    """
-    names = map(lambda x: x['name'], gltf['materials'])
-    for name in names:
-        if name.startswith('F00_001'):
-            return CLOTH_STUDENT
-        elif name.startswith('F00_002'):
-            return CLOTH_ONE_PIECE
-        elif name.startswith('F00_003') or name.startswith('M00_001'):
-            return CLOTH_MALE_STUDENT
-    return CLOTH_NAKED
 
 
 def find_eye_extra_name(gltf):
@@ -663,35 +643,9 @@ def reduce_vroid(gltf, replace_shade_color, texture_size, emissive, material_con
                 merge_dict_recursive(modifiers, material)
 
     else:
-
-        cloth_type = get_cloth_type(gltf)
-
-        if cloth_type == CLOTH_STUDENT:
-            # 制服上下、リボン、靴
-            gltf = combine_material(gltf, {
-                '_Tops_': {'pos': (0, 0), 'size': (2048, 1536)},
-                '_Bottoms_': {'pos': (0, 1536), 'size': (512, 512)},
-                '_Accessory_': {'pos': (512, 1536), 'size': (512, 512)},
-                '_Shoes_': {'pos': (1024, 1536), 'size': (512, 512)}
-            }, '_Tops_', texture_size)
-
-        elif cloth_type == CLOTH_MALE_STUDENT:
-            gltf = combine_material(gltf, {
-                '_Tops_': {'pos': (0, 0), 'size': (2048, 1024)},
-                '_Bottoms_': {'pos': (0, 1024), 'size': (1024, 1024)},
-                '_Accessory_': {'pos': (1024, 1024), 'size': (512, 512)},
-                '_Shoes_': {'pos': (1024, 1536), 'size': (512, 512)}
-            }, '_Tops_', texture_size)
-
-        elif cloth_type == CLOTH_ONE_PIECE:
-            # ワンピース、靴
-            # 0.3.0: F00_002_Onepiece
-            # 0.4.0-p1: F00_002_Onepice
-            # 0.6.3: F00_002_01_Onepice
-            gltf = combine_material(gltf, {
-                '_Onepi': {'pos': (0, 0), 'size': (2048, 1536)},
-                '_Shoes_': {'pos': (0, 1536), 'size': (512, 512)}
-            }, '_Onepi', texture_size)
+        # 服の結合
+        if cloth_place := get_cloth_place(gltf):
+            gltf = combine_material(gltf, cloth_place['place'], cloth_place['main'], texture_size)
 
         # 体、顔、口
         gltf = combine_material(gltf, {
