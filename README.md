@@ -18,8 +18,9 @@
 * マテリアル結合により基本色、影色が他のマテリアルに結合されるため、一部マテリアルの色が変わる可能性があります。
 
 ## ダウンロード
-* 安定版 : [Releaseページ](https://github.com/kanno2inf/VReducer/releases)からダウンロード
-* 開発最新版 : [こちら](https://github.com/kanno2inf/VReducer/archive/master.zip) からダウンロード
+* 安定版(kanno2infさん) : [Releaseページ](https://github.com/kanno2inf/VReducer/releases)からダウンロード
+* VRoid 0.12.1対応+テクスチャ512px最適化最新版 : [こちら](https://github.com/yakumo-proj/VReducer/archive/benefit-512px.zip) からダウンロード
+
 
 ## 準備
 テクスチャ結合で[Pillow(PIL)](https://github.com/python-pillow/Pillow) とtomlライブラリを使用しているため、以下のコマンドで必要なモジュールをインストールしてください。
