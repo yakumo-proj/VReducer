@@ -647,30 +647,27 @@ def reduce_vroid(gltf, replace_shade_color, texture_size, emissive, material_con
         if cloth_place := get_cloth_place(gltf):
             gltf = combine_material(gltf, cloth_place['place'], cloth_place['main'], texture_size)
 
-        # 体、顔、口
-        gltf = combine_material(gltf, {
-            '_Face_': {'pos': (0, 0), 'size': (512, 512)},
-            '_FaceMouth_': {'pos': (512, 0), 'size': (512, 512)},
-            '_Body_': {'pos': (0, 512), 'size': (2048, 1536)}
-        }, '_Face_', texture_size)
         # レンダータイプを変更
         face_mat = find_vrm_material(gltf, '_Face_')
         face_mat['keywordMap']['_ALPHATEST_ON'] = True
         face_mat['tagMap']["RenderType"] = 'TransparentCutout'
 
-        # アイライン、まつ毛
+        # 顔、口、目
         gltf = combine_material(gltf, {
-            find_eye_extra_name(gltf): {'pos': (0, 0), 'size': (1024, 512)},
-            '_FaceEyeline_': {'pos': (0, 512), 'size': (1024, 512)},
-            '_FaceEyelash_': {'pos': (0, 1024), 'size': (1024, 512)}
-        }, '_FaceEyeline_', texture_size)
+            '_Face_': {'pos': (0, 0), 'size': (1024, 1024)},
+            '_FaceMouth_': {'pos': (0, 1024), 'size': (1024, 1024)},
+            '_EyeIris_': {'pos': (1024, 0), 'size': (1024, 512)},
+            '_EyeHighlight_': {'pos': (1024, 512), 'size': (1024, 512)},
+            '_EyeWhite_': {'pos': (1024, 1024), 'size': (1024, 512)},
+            find_eye_extra_name(gltf): {'pos': (1024, 1536), 'size': (1024, 512)},
+        }, '_Face_', texture_size)
 
-        # 瞳孔、ハイライト、白目
+        # アイライン、まつ毛、眉毛
         gltf = combine_material(gltf, {
-            '_EyeIris_': {'pos': (0, 0), 'size': (1024, 512)},
-            '_EyeHighlight_': {'pos': (0, 512), 'size': (1024, 512)},
-            '_EyeWhite_': {'pos': (0, 1024), 'size': (1024, 512)}
-        }, '_EyeHighlight_', texture_size)
+            '_FaceEyeline_': {'pos': (0, 0), 'size': (1024, 512)},
+            '_FaceEyelash_': {'pos': (0, 512), 'size': (1024, 512)},
+            '_FaceBrow_': {'pos': (0, 1024), 'size': (1024, 512)},
+        }, '_FaceEyeline_', texture_size)
 
         # 髪の毛、頭の下毛
         hair_back_material = find_vrm_material(gltf, '_HairBack_')
