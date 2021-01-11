@@ -26,10 +26,10 @@ def get_cloth_place(gltf: dict) -> dict:
     """
     material_names = [material['name'] for material in gltf['materials']]
     has_tops = contains('_Tops_', material_names)
-    has_accessory = contains('_AccessoryNeck_', material_names)
+    has_accessory = contains('_Accessory_', material_names)
     has_shoes = contains('_Shoes_', material_names)
     has_bottom = contains('_Bottoms_', material_names)
-    is_skirt = startswith('F00_001_01_Bottoms_', material_names)
+    is_skirt = startswith('F00_001_01_Bottoms_', material_names) or startswith('M00_003_01_Bottoms_', material_names)
 
     place = {}
     main = None  # 結合先マテリアル
@@ -55,8 +55,8 @@ def get_cloth_place(gltf: dict) -> dict:
         oy = 512
 
     if has_accessory:
-        main = main or '_AccessoryNeck_'
-        place['_AccessoryNeck_'] = {'pos': (ox, oy), 'size': (256, 256)}
+        main = main or '_Accessory_'
+        place['_Accessory_'] = {'pos': (ox, oy), 'size': (256, 256)}
 
     if not main:
         return {}  # 素体の場合
