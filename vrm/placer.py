@@ -38,7 +38,7 @@ def get_cloth_place(gltf: dict) -> dict:
     if has_bottom:
         main = main or '_Bottoms_'
         place['_Bottoms_'] = {'pos': (0, oy), 'size': (1024, 1024)}
-        ox = 1024
+        oy = 1024
         if is_skirt:
             place['_Bottoms_']['size'] = (1024, 512)
             oy = 512
