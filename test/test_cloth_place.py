@@ -43,12 +43,12 @@ from vrm import placer
         ),
         (  # アクセサリのみ
                 {'materials': [
-                    {'name': 'F00_001_01_AccessoryNeck_01_CLOTH-11'}
+                    {'name': 'F00_001_01_Accessory_Tie_01_CLOTH-11'}
                 ]},
                 {
-                    'main': '_AccessoryNeck_',
+                    'main': '_Accessory_',
                     'place': {
-                        '_AccessoryNeck_': {'pos': (0, 0), 'size': (256, 256)}
+                        '_Accessory_': {'pos': (0, 0), 'size': (256, 256)}
                     }
                 }
         ),
@@ -68,13 +68,13 @@ from vrm import placer
         (  # 服上、アクセサリ
                 {'materials': [
                     {'name': 'F00_001_01_Tops_01_CLOTH-01'},
-                    {'name': 'F00_001_01_AccessoryNeck_01_CLOTH-11'}
+                    {'name': 'F00_001_01_Accessory_Tie_01_CLOTH-11'}
                 ]},
                 {
                     'main': '_Tops_',
                     'place': {
                         '_Tops_': {'pos': (0, 0), 'size': (1024, 1024)},
-                        '_AccessoryNeck_': {'pos': (1024, 0), 'size': (256, 256)}
+                        '_Accessory_': {'pos': (1024, 0), 'size': (256, 256)}
                     }
                 }
         ),
@@ -107,26 +107,26 @@ from vrm import placer
         (  # 靴、アクセサリ
                 {'materials': [
                     {'name': 'F00_001_01_Shoes_01_CLOTH-13'},
-                    {'name': 'F00_001_01_AccessoryNeck_01_CLOTH-11'}
+                    {'name': 'F00_001_01_Accessory_Tie_01_CLOTH-11'}
                 ]},
                 {
                     'main': '_Shoes_',
                     'place': {
                         '_Shoes_': {'pos': (0, 0), 'size': (512, 512)},
-                        '_AccessoryNeck_': {'pos': (0, 512), 'size': (256, 256)}
+                        '_Accessory_': {'pos': (0, 512), 'size': (256, 256)}
                     }
                 }
         ),
         (  # 靴、アクセサリ
                 {'materials': [
                     {'name': 'F00_001_01_Bottoms_01_CLOTH-12'},
-                    {'name': 'F00_001_01_AccessoryNeck_01_CLOTH-11'}
+                    {'name': 'F00_001_01_Accessory_Tie_01_CLOTH-11'}
                 ]},
                 {
                     'main': '_Bottoms_',
                     'place': {
                         '_Bottoms_': {'pos': (0, 0), 'size': (1024, 512)},
-                        '_AccessoryNeck_': {'pos': (1024, 0), 'size': (256, 256)}
+                        '_Accessory_': {'pos': (1024, 0), 'size': (256, 256)}
                     }
                 }
         ),
@@ -163,7 +163,7 @@ from vrm import placer
                     {'name': 'F00_001_01_Tops_01_CLOTH-01'},
                     {'name': 'F00_001_01_Bottoms_01_CLOTH-12'},
                     {'name': 'F00_001_01_Shoes_01_CLOTH-13'},
-                    {'name': 'F00_001_01_AccessoryNeck_01_CLOTH-11'}
+                    {'name': 'F00_001_01_Accessory_Tie_01_CLOTH-11'}
                 ]},
                 {
                     'main': '_Tops_',
@@ -171,20 +171,20 @@ from vrm import placer
                         '_Tops_': {'pos': (0, 0), 'size': (1024, 1024)},
                         '_Bottoms_': {'pos': (0, 1024), 'size': (1024, 512)},
                         '_Shoes_': {'pos': (1024, 0), 'size': (512, 512)},
-                        '_AccessoryNeck_': {'pos': (1024, 512), 'size': (256, 256)}
+                        '_Accessory_': {'pos': (1024, 512), 'size': (256, 256)}
                     }
                 }
         ),
         (  # スカートリボン
                 {'materials': [
                     {'name': 'F00_001_01_Bottoms_01_CLOTH-12'},
-                    {'name': 'F00_001_01_AccessoryNeck_01_CLOTH-11'}
+                    {'name': 'F00_001_01_Accessory_Tie_01_CLOTH-11'}
                 ]},
                 {
                     'main': '_Bottoms_',
                     'place': {
                         '_Bottoms_': {'pos': (0, 0), 'size': (1024, 512)},
-                        '_AccessoryNeck_': {'pos': (1024, 0), 'size': (256, 256)}
+                        '_Accessory_': {'pos': (1024, 0), 'size': (256, 256)}
                     }
                 }
         ),
@@ -193,7 +193,7 @@ from vrm import placer
                     {'name': 'M00_001_01_Tops_01_CLOTH-10'},
                     {'name': 'M00_001_01_Bottoms_01_CLOTH-12'},
                     {'name': 'M00_001_01_Shoes_01_CLOTH-13'},
-                    {'name': 'M00_001_01_AccessoryNeck_01_CLOTH-11'}
+                    {'name': 'M00_001_01_Accessory_Tie_01_CLOTH-11'}
                 ]},
                 {
                     'main': '_Tops_',
@@ -201,7 +201,7 @@ from vrm import placer
                         '_Tops_': {'pos': (0, 0), 'size': (1024, 1024)},
                         '_Bottoms_': {'pos': (0, 1024), 'size': (1024, 1024)},
                         '_Shoes_': {'pos': (1024, 0), 'size': (512, 512)},
-                        '_AccessoryNeck_': {'pos': (1024, 512), 'size': (256, 256)}
+                        '_Accessory_': {'pos': (1024, 512), 'size': (256, 256)}
                     }
                 }
         ),
